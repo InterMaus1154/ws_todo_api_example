@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
+use App\Http\Controllers\AuthController;
 
 Route::get('/status', function () {
     return response()->json([
@@ -22,3 +23,5 @@ Route::post('/db/reset', function () {
         ], 500);
     }
 });
+
+Route::prefix('auth')->controller(AuthController::class)->group(base_path('routes/auth.php'));
