@@ -193,7 +193,7 @@ paths:
         '204':
           description: Todo deleted
     patch:
-      summary: Toggle todo status
+      summary: Toggle todo completed status
       tags: [Todo]
       security:
         - bearerAuth: []
