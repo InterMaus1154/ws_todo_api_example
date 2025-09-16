@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TodoController;
+use App\Enums\TodoImportance;
 
 Route::get('/status', function () {
     return response()->json([
@@ -25,6 +26,17 @@ Route::post('/db/reset', function () {
         ], 500);
     }
 });
+
+Route::get('/todo-importance', function () {
+    $keyed = array_combine(
+        array_map(fn($case) => $case->name, TodoImportance::cases()),
+        array_map(fn($case) => $case->value, TodoImportance::cases())
+    );
+
+    return response()->json([
+        'importance' => $keyed
+    ]);
+})->middleware('auth:sanctum');
 
 Route::prefix('auth')->controller(AuthController::class)->group(base_path('routes/auth.php'));
 Route::prefix('categories')->middleware('auth:sanctum')->controller(CategoryController::class)->group(base_path('routes/categories.php'));

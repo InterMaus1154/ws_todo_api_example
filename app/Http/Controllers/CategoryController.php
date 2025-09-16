@@ -29,6 +29,7 @@ class CategoryController extends Controller
 
     public function store(CategoryRequest $request): JsonResponse
     {
+        Gate::authorize('create', Category::class);
         try {
             $category = $request->user()->categories()->create([
                 'category_name' => $request->validated('categoryName')
@@ -40,7 +41,7 @@ class CategoryController extends Controller
             return response()->json([
                 'message' => 'Error at creating category',
                 'error' => $e->getMessage()
-            ], $e->getCode());
+            ], 500);
         }
     }
 
@@ -58,7 +59,7 @@ class CategoryController extends Controller
             return response()->json([
                 'message' => 'Error at updating category',
                 'error' => $e->getMessage()
-            ], $e->getCode());
+            ], 500);
         }
     }
 
@@ -72,7 +73,7 @@ class CategoryController extends Controller
             return response()->json([
                 'message' => 'Error at deleting category',
                 'error' => $e->getMessage()
-            ], $e->getCode());
+            ], 500);
         }
     }
 }

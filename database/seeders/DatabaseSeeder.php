@@ -14,10 +14,33 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-
-        User::factory()->create([
+        $user = User::factory()->create([
             'username' => 'johndoe',
             'password' => 'password123'
+        ]);
+
+        $user->categories()->create([
+           'category_name' => 'Work'
+        ]);
+
+        $user->categories()->create([
+            'category_name' => 'School'
+        ]);
+
+        $user->categories()->create([
+            'category_name' => 'Garden'
+        ]);
+
+        $user->categories()->create([
+            'category_name' => 'Family'
+        ]);
+
+        $user->categories()->create([
+            'category_name' => 'Leisure'
+        ]);
+
+        $user->categories()->create([
+           'category_name' => 'House'
         ]);
     }
 }
