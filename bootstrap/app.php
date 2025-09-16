@@ -41,5 +41,11 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 405);
             }
 
+            if ($e instanceof \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException) {
+                return response()->json([
+                    'message' => 'You do not own this resource! Action unauthorized'
+                ], 403);
+            }
+
         });
     })->create();
