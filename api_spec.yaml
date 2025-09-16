@@ -1,0 +1,516 @@
+openapi: 3.0.3
+info:
+  title: Todo API
+  version: 1.0.0
+servers:
+  - url: http://127.0.0.1:8000/api/v1
+tags:
+  - name: Todo
+    description: Routes for managing todos
+  - name: Category
+    description: Routes for managing categories
+  - name: Auth
+    description: Authentication routes
+  - name: Misc
+    description: Miscellaneous routes (status, reset, enum values)
+
+paths:
+  # ------------------ Auth Routes ------------------
+  /auth/login:
+    post:
+      summary: Login user
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/UserResource'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+
+  /auth/register:
+    post:
+      summary: Register new user
+      tags: [Auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/UserResource'
+        '422':
+          description: Validation failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      type: string
+
+  /auth/logout:
+    post:
+      summary: Logout user
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: false
+        content:
+          application/json: {}
+      responses:
+        '200':
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logged out successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ------------------ Todo Routes ------------------
+  /todos:
+    get:
+      summary: Get all todos
+      tags: [Todo]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of todos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TodoResource'
+    post:
+      summary: Create a new todo
+      tags: [Todo]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoRequest'
+      responses:
+        '201':
+          description: Todo created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoResource'
+
+  /todos/{todo}:
+    parameters:
+      - name: todo
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get a single todo
+      tags: [Todo]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Todo details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoResource'
+    put:
+      summary: Update a todo
+      tags: [Todo]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoRequest'
+      responses:
+        '200':
+          description: Todo updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoResource'
+    delete:
+      summary: Delete a todo
+      tags: [Todo]
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Todo deleted
+    patch:
+      summary: Toggle todo status
+      tags: [Todo]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Todo status toggled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TodoResource'
+
+  # ------------------ Category Routes ------------------
+  /categories:
+    get:
+      summary: Get all categories
+      tags: [Category]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CategoryResource'
+    post:
+      summary: Create a category
+      tags: [Category]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+      responses:
+        '201':
+          description: Category created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResource'
+
+  /categories/{category}:
+    parameters:
+      - name: category
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      summary: Get a single category
+      tags: [Category]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Category details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResource'
+    put:
+      summary: Update a category
+      tags: [Category]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CategoryRequest'
+      responses:
+        '200':
+          description: Category updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryResource'
+    delete:
+      summary: Delete a category
+      tags: [Category]
+      security:
+        - bearerAuth: []
+      responses:
+        '204':
+          description: Category deleted
+
+  # ------------------ Misc Routes ------------------
+  /status:
+    get:
+      summary: Check API status
+      tags: [Misc]
+      responses:
+        '200':
+          description: API running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: API is running:)
+
+  /db/reset:
+    post:
+      summary: Reset database (migrate:fresh + seed)
+      tags: [Misc]
+      responses:
+        '200':
+          description: Database reset successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Database has been reset
+                  timeOfReset:
+                    type: string
+                    format: date-time
+                    example: 2025-09-16T12:00:00
+        '500':
+          description: Database reset failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Database reset failed
+
+  /todo-importance:
+    get:
+      summary: Get all TodoImportance enum values
+      tags: [Misc]
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of importance levels
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  importance:
+                    type: object
+                    additionalProperties:
+                      type: integer
+                    example:
+                      Urgent: 1
+                      Mid: 2
+                      Low: 3
+                      None: 0
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # ------------------ User / Auth ------------------
+    UserResource:
+      type: object
+      properties:
+        userId:
+          type: integer
+        username:
+          type: string
+        createdAt:
+          type: string
+          format: date
+
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    RegisterRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          maxLength: 100
+        password:
+          type: string
+          minLength: 8
+
+    # ------------------ Todos ------------------
+    TodoResource:
+      type: object
+      properties:
+        categoryId:
+          type: integer
+        categoryName:
+          type: string
+        todoId:
+          type: integer
+        todoTitle:
+          type: string
+        todoCompleted:
+          type: boolean
+        todoDescription:
+          type: string
+          nullable: true
+        todoImportance:
+          type: integer
+          enum: [0, 1, 2, 3]
+        todoDueDate:
+          type: string
+          format: date
+        overdue:
+          type: boolean
+          nullable: true
+
+    TodoRequest:
+      type: object
+      required:
+        - categoryId
+        - todoTitle
+        - todoImportance
+        - todoDueDate
+      properties:
+        categoryId:
+          type: integer
+        todoTitle:
+          type: string
+          maxLength: 150
+        todoDescription:
+          type: string
+          nullable: true
+        todoImportance:
+          type: integer
+          enum: [0, 1, 2, 3]
+        todoDueDate:
+          type: string
+          format: date
+
+    # ------------------ Categories ------------------
+    CategoryResource:
+      type: object
+      properties:
+        categoryId:
+          type: integer
+        categoryName:
+          type: string
+
+    CategoryRequest:
+      type: object
+      required:
+        - categoryName
+      properties:
+        categoryName:
+          type: string
+          maxLength: 50
+
+  responses:
+    Unauthorized:
+      description: Invalid credentials or missing token
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Invalid or missing token
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Not found
+    MethodNotAllowed:
+      description: HTTP method not allowed
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: Method not allowed
+              error:
+                type: string
+    Forbidden:
+      description: Action unauthorized
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: You do not own this resource! Action unauthorized

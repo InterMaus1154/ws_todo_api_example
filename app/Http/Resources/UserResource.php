@@ -16,9 +16,9 @@ class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'user_id' => $this->id,
+            'userId' => $this->id,
             'username' => $this->username,
-            'created_at' => Carbon::parse($this->created_at)->toDateString()
+            'createdAt' => Carbon::parse($this->created_at)->toDateString()
         ];
     }
 }

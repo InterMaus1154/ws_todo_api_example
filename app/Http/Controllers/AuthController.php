@@ -39,7 +39,7 @@ class AuthController extends Controller
             return response()->json([
                 'token' => $token,
                 'user' => UserResource::make($user)
-            ]);
+            ], 201);
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'Error at creating user',
