@@ -30,6 +30,34 @@ class AuthController extends Controller
 
     public function register(RegisterRequest $request): JsonResponse
     {
+        try {
+            $user = User::create([
+                'username' => $request->validated('username'),
+                'password' => $request->validated('password'),
+            ]);
+            $token = $user->createToken('auth_token')->plainTextToken;
+            return response()->json([
+                'token' => $token,
+                'user' => UserResource::make($user)
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'message' => 'Error at creating user',
+                'error' => $e->getMessage()
+            ], $e->getCode());
+        }
+    }
 
+    public function logout(Request $request)
+    {
+        try{
+            $request->user()->tokens()->delete();
+            return response(status: 200);
+        }catch (\Throwable $e){
+            return response()->json([
+               'message' => 'Error at logging out',
+               'error' => $e->getMessage()
+            ], $e->getCode());
+        }
     }
 }
